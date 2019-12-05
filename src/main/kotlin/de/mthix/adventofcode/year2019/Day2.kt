@@ -1,5 +1,6 @@
 package de.mthix.adventofcode.year2019
 
+import de.mthix.adventofcode.readInput
 import java.io.File
 
 /**
@@ -121,8 +122,4 @@ fun process(program:Array<Int>, noun:Int, verb:Int):Int {
     }
 
     return program[0]
-}
-
-fun readInput(file:File):Array<Int> {
-    return file.readText().split(',').map { it.toInt() }.toTypedArray()
 }
