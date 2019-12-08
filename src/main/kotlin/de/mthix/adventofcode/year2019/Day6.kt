@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import java.io.File
+import de.mthix.adventofcode.linesOfDay
 import kotlin.collections.HashMap
 
 /**
@@ -116,7 +116,7 @@ What is the minimum number of orbital transfers required to move from the object
  * See also [https://adventofcode.com/2019/day/6].
  */
 fun main() {
-    val lines = File(object {}.javaClass.getResource("input.day6.txt").file).readLines()
+    val lines = linesOfDay(2019,6)
     //val lines = listOf("COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L")
     //val lines = listOf("COM)B", "B)C", "C)D", "D)E", "E)F", "B)G", "G)H", "D)I", "E)J", "J)K", "K)L", "K)YOU", "I)SAN")
 

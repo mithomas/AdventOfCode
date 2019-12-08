@@ -1,8 +1,8 @@
 package de.mthix.adventofcode.year2018
 
+import de.mthix.adventofcode.linesOfDay
 import de.mthix.adventofcode.year2018.GuardLogEntryType.*
 import de.mthix.adventofcode.year2018.GuardLogEntryType.START_OF_SLEEP
-import java.io.File
 import java.time.LocalDateTime
 
 /**
@@ -73,8 +73,7 @@ What is the ID of the guard you chose multiplied by the minute you chose? (In th
  */
 
 fun main(args: Array<String>) {
-    val file = File(object {}.javaClass.getResource("input.day4.txt").file)
-    val calculator = GuardShiftCalculator(file.readLines())
+    val calculator = GuardShiftCalculator(linesOfDay(2018, 4))
 
     val tiredestGuard = calculator.findTiredestGuard()
     println("Solution for step 1: tired guards: ${tiredestGuard.id*tiredestGuard.getSleepiestMinute()}")

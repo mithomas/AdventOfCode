@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2018
 
-import java.io.File
+import de.mthix.adventofcode.linesOfDay
 
 /**
 ```
@@ -63,9 +63,7 @@ What is the ID of the only claim that doesn't overlap?
  */
 
 fun main(args: Array<String>) {
-    val file = File(object {}.javaClass.getResource("input.day3.txt").file)
-    val calculator = FabricClaimCalculator(file.readLines().map { Claim.fromInputLine(it) })
-
+    val calculator = FabricClaimCalculator(linesOfDay(2018, 3).map { Claim.fromInputLine(it) })
 
     println("Solution for step 1: ${calculator.calculateClaimOverlay()}")
     println("Solution for step 2: ${calculator.findNonOverlappingClaimId()}")

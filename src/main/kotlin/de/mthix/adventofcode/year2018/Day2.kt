@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2018
 
-import java.io.File
+import de.mthix.adventofcode.linesOfDay
 import java.lang.IllegalArgumentException
 
 /**
@@ -55,8 +55,7 @@ What letters are common between the two correct box IDs? (In the example above, 
  */
 
 fun main(args: Array<String>) {
-    val file = File(object {}.javaClass.getResource("input.day2.txt").file)
-    val calculator = InventoryChecksumCalculator(file.readLines())
+    val calculator = InventoryChecksumCalculator(linesOfDay(2018, 2))
 
 
     println("Solution for step 1: ${calculator.calculateChecksum()}")

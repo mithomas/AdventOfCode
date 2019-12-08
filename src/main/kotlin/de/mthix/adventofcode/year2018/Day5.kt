@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2018
 
-import java.io.File
+import de.mthix.adventofcode.textOfDay
 
 /**
 ```
@@ -54,10 +54,8 @@ What is the length of the shortest polymer you can produce by removing all units
  */
 
 fun main(args: Array<String>) {
-    val file = File(object {}.javaClass.getResource("input.day5.txt").file)
-
-    println("Solution for step 1: ${reducePolymer(file.readText()).length}")
-    println("Solution for step 2: ${improvePolymer(file.readText())}")
+    println("Solution for step 1: ${reducePolymer(textOfDay(2018, 5)).length}")
+    println("Solution for step 2: ${improvePolymer(textOfDay(2018, 5))}")
 }
 
 fun improvePolymer(polymer: String): Int {

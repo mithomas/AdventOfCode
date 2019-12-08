@@ -2,6 +2,11 @@ package de.mthix.adventofcode
 
 import java.io.File
 
-fun readInput(file: File):Array<Int> {
-    return file.readText().split(',').map { it.toInt() }.toTypedArray()
-}
+
+fun intArrayFromCsvInputForDay(year: Int, day: Int) = textOfDay(year, day).split(',').map { it.toInt() }.toTypedArray()
+
+fun textOfDay(year: Int, day: Int) = fileOfDay(year, day).readText()
+
+fun linesOfDay(year: Int, day: Int) = fileOfDay(year, day).readLines()
+
+fun fileOfDay(year: Int, day: Int) = File(object {}.javaClass.getResource("year$year/input.day$day.txt").file)

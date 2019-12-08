@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2018
 
-import java.io.File
+import de.mthix.adventofcode.linesOfDay
 import java.lang.IllegalArgumentException
 
 /**
@@ -65,8 +65,7 @@ What is the first frequency your device reaches twice?
  */
 
 fun main(args: Array<String>) {
-    val file = File(object {}.javaClass.getResource("input.day1.txt").file)
-    val calculator = FrequencyCalculator.buildFromInputList(file.readLines())
+    val calculator = FrequencyCalculator.buildFromInputList(linesOfDay(2018,1))
 
     println("Solution for step 1: ${calculator.calculateFrequencyShifts()}")
     println("Solution for step 2: ${calculator.findDuplicateFrequency()}")

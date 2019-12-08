@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import java.io.File
+import de.mthix.adventofcode.linesOfDay
 import kotlin.math.abs
 
 /**
@@ -87,13 +87,11 @@ What is the fewest combined steps the wires must take to reach an intersection?
  * See also [https://adventofcode.com/2019/day/3].
  */
 fun main() {
-    val file = File(object {}.javaClass.getResource("input.day3.txt").file)
-
     println("initializing grid...")
     val grid = initGrid(30000, 20000)
     val centralPort = getGridElement(grid, 5000,5000)
 
-    file.readLines().forEachIndexed { i, wire ->
+    linesOfDay(2019,3).forEachIndexed { i, wire ->
         println("adding wire $i...")
         wire2grid(grid, centralPort, wire, i)
     }

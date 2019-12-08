@@ -1,10 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import de.mthix.adventofcode.readInput
-import de.mthix.adventofcode.year2019.OpCode.*
-import org.apache.commons.lang3.builder.ToStringBuilder
-import java.io.File
-import java.util.*
+import de.mthix.adventofcode.intArrayFromCsvInputForDay
 
 /**
 ```
@@ -103,128 +99,11 @@ What is the diagnostic code for system ID 5?
  *
  * See also [https://adventofcode.com/2019/day/5].
  */
+
 fun main() {
-    val file = File(object {}.javaClass.getResource("input.day5.txt").file)
+    val solutionPart1 = IntComputer(intArrayFromCsvInputForDay(2019,5)).process(1)
+    println("Solution for step 1: $solutionPart1")
 
-    //val solutionPart1 = process(readInput(file), 1)
-    //println("Solution for step 1: $solutionPart1")
-
-    val solutionPart2 = process(readInput(file), 5)
+    val solutionPart2 = IntComputer(intArrayFromCsvInputForDay(2019, 5)).process(5)
     println("Solution for step 2: $solutionPart2")
 }
-
-fun process(program: Array<Int>, input: Int): List<Int> {
-    println("input:       $input")
-    println("program size:${program.size}\n")
-    val output = LinkedList<Int>()
-
-    var index = 0
-    var instruction = Instruction(program, index)
-
-    while (instruction.opcode != END) {
-        println("instruction: $instruction")
-
-        var jumped = false
-
-        when (instruction.opcode) {
-            ADD -> program[instruction.targetIndex] = instruction.operands.sum()
-            MULTIPLY -> program[instruction.targetIndex] = instruction.operands.reduce { sum, operand -> sum * operand }
-            INPUT -> program[instruction.targetIndex] = input
-            OUTPUT -> output += instruction.operands.sum()
-            JUMP_IF_TRUE -> if (instruction.operands[0] > 0) {
-                index = instruction.operands[1]
-                jumped = true
-            }
-            JUMP_IF_FALSE -> if (instruction.operands[0] == 0) {
-                index = instruction.operands[1]
-                jumped = true
-            }
-            LESS_THEN -> program[instruction.targetIndex] = if (instruction.operands[0] < instruction.operands[1]) 1 else 0
-            EQUALS -> program[instruction.targetIndex] = if (instruction.operands[0] == instruction.operands[1]) 1 else 0
-            else -> throw IllegalArgumentException("Wrong opcode '$instruction.opcode'.")
-        }
-
-        if (!jumped) {
-            index += instruction.pointerIncrement
-        }
-        println("new index:   $index")
-        println("new opcode:  ${program[index]}")
-        println("program:     ${program.asList().mapIndexed{i,e -> "$i:$e" }}")
-        println("output:      $output\n")
-
-        instruction = Instruction(program, index)
-    }
-
-    return output
-}
-
-val OPCODE_LENGTH = 2
-
-class Instruction(val program: Array<Int>, index: Int) {
-    val opcode: OpCode
-    val pointerIncrement: Int
-    val targetIndex: Int
-    val operands: MutableList<Int> = LinkedList()
-    val positionModes: MutableList<ParameterMode> = LinkedList()
-
-    init {
-        val opcodeMode = program[index].toString()
-        opcode = OpCode.of(if (opcodeMode.length > 2) opcodeMode.substring(opcodeMode.length - OPCODE_LENGTH).toInt() else opcodeMode.toInt())
-
-        (1..opcode.operandCount).forEach { i ->
-            positionModes += ParameterMode.of(opcodeMode, i)
-            operands += getOperand(index + i, positionModes[i - 1])
-        }
-        targetIndex = if (opcode.hasTarget) program[index + opcode.operandCount + 1] else -1
-        pointerIncrement = 1 + opcode.operandCount + (if (opcode.hasTarget) 1 else 0)
-    }
-
-    fun getOperand(value: Int, mode: ParameterMode): Int {
-        return if (mode == ParameterMode.POSITION) program[program[value]] else program[value]
-    }
-
-    override fun toString(): String {
-        return ToStringBuilder.reflectionToString(this)
-    }
-}
-
-enum class OpCode(val opcode: Int, val operandCount: Int, val hasTarget: Boolean) {
-    ADD(1, 2, true),
-    MULTIPLY(2, 2, true),
-    INPUT(3, 0, true),
-    OUTPUT(4, 1, false),
-    JUMP_IF_TRUE(5, 2, false),
-    JUMP_IF_FALSE(6, 2, false),
-    LESS_THEN(7, 2, true),
-    EQUALS(8, 2, true),
-    END(99, 0, false);
-
-    companion object {
-        fun of(opcode: Int): OpCode {
-            println("parsing code:$opcode")
-            return values().first { it.opcode == opcode }
-        }
-    }
-}
-
-enum class ParameterMode(val mode: Int) {
-    POSITION(0),
-    IMMEDIATE(1),
-    ;
-
-    companion object {
-        private val map = ParameterMode.values().associateBy(ParameterMode::mode)
-
-        fun of(opcodeMode: String, operandIndex: Int): ParameterMode {
-            if (opcodeMode.length >= operandIndex + OPCODE_LENGTH) {
-                return values().first { it.mode == opcodeMode.get(opcodeMode.length - operandIndex - OPCODE_LENGTH).toString().toInt() }
-            }
-
-            println("param mode:  default")
-            return POSITION
-        }
-    }
-}
-
-
-

@@ -1,7 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import de.mthix.adventofcode.readInput
-import java.io.File
+import de.mthix.adventofcode.intArrayFromCsvInputForDay
 
 /**
 ```
@@ -81,15 +80,18 @@ Find the input noun and verb that cause the program to produce the output 196907
  * See also [https://adventofcode.com/2019/day/2].
  */
 fun main() {
-    val file = File(object {}.javaClass.getResource("input.day2.txt").file)
+    val program = intArrayFromCsvInputForDay(2019, 2)
 
-    val solutionPart1 = process(readInput(file), 12,2)
+    val solutionPart1 =  process(program.copyOf(), 12, 2)
 
     var solutionPart2 = 0
-    for (noun in 0..100) {
+    outer@ for (noun in 0..100) {
         for (verb in 0..100) {
-            if(process(readInput(file), noun,verb) == 19690720) {
+            if (process(program.copyOf(), noun, verb) == 19690720) {
+                println(noun)
+                println(verb)
                 solutionPart2 = 100 * noun + verb
+                break@outer
             }
         }
     }
@@ -98,28 +100,12 @@ fun main() {
     println("Solution for step 2: $solutionPart2")
 }
 
-fun process(program:Array<Int>, noun:Int, verb:Int):Int {
-    println ("$noun $verb")
+fun process(program: Array<Int>, noun: Int, verb: Int): Int {
+    println("$noun $verb")
     program[1] = noun
     program[2] = verb
 
-    var index = 0
-    var opcode = program[index]
-
-    while (opcode != 99) {
-        val op1 = program[program[index + 1]]
-        val op2 = program[program[index + 2]]
-        val targetIndex = program[index + 3]
-        println("$opcode: $op1 $op2 -> $targetIndex")
-
-        when (opcode) {
-            1 -> program[targetIndex] = op1 + op2
-            2 -> program[targetIndex] = op1 * op2
-            else -> throw IllegalArgumentException("Wrong opcode '$opcode'.")
-        }
-        index += 4
-        opcode = program[index]
-    }
+    IntComputer(program).process(0)
 
     return program[0]
 }
