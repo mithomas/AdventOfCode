@@ -3,7 +3,7 @@ package de.mthix.adventofcode
 import java.io.File
 
 
-fun intArrayFromCsvInputForDay(year: Int, day: Int) = textOfDay(year, day).split(',').map { it.toInt() }.toTypedArray()
+fun longArrayFromCsvInputForDay(year: Int, day: Int) = textOfDay(year, day).split(',').map { it.toLong() }.toTypedArray()
 
 fun textOfDay(year: Int, day: Int) = fileOfDay(year, day).readText()
 

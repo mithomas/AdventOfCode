@@ -1,6 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import de.mthix.adventofcode.intArrayFromCsvInputForDay
+import de.mthix.adventofcode.longArrayFromCsvInputForDay
 
 /**
 ```
@@ -101,9 +101,9 @@ What is the diagnostic code for system ID 5?
  */
 
 fun main() {
-    val solutionPart1 = IntComputer(intArrayFromCsvInputForDay(2019,5)).process(1)
+    val solutionPart1 = IntComputer(longArrayFromCsvInputForDay(2019,5)).process(1)
     println("Solution for step 1: $solutionPart1")
 
-    val solutionPart2 = IntComputer(intArrayFromCsvInputForDay(2019, 5)).process(5)
+    val solutionPart2 = IntComputer(longArrayFromCsvInputForDay(2019, 5)).process(5)
     println("Solution for step 2: $solutionPart2")
 }

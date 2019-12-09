@@ -1,6 +1,9 @@
 package de.mthix.adventofcode.year2019
 
-import de.mthix.adventofcode.intArrayFromCsvInputForDay
+import de.mthix.adventofcode.longArrayFromCsvInputForDay
+import de.mthix.adventofcode.year2019.IntComputer.ParamMode
+import de.mthix.adventofcode.year2019.IntComputer.ParamMode.IMMEDIATE
+import de.mthix.adventofcode.year2019.IntComputer.ParamMode.POSITION
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -21,28 +24,28 @@ class IntComputerTest {
             fun aocDay2Sample1() {
                 computer = IntComputer(arrayOf(1, 0, 0, 0, 99))
                 assertThat(computer?.process(42)).isEmpty()
-                assertThat(computer?.program).isEqualTo(arrayOf(2, 0, 0, 0, 99))
+                assertThat(computer?.program).startsWith(2, 0, 0, 0, 99)
             }
 
             @Test
             fun aocDay2Sample2() {
                 computer = IntComputer(arrayOf(2, 3, 0, 3, 99))
                 assertThat(computer?.process(42)).isEmpty()
-                assertThat(computer?.program).isEqualTo(arrayOf(2, 3, 0, 6, 99))
+                assertThat(computer?.program).startsWith(2, 3, 0, 6, 99)
             }
 
             @Test
             fun aocDay2Sample3() {
                 computer = IntComputer(arrayOf(2, 4, 4, 5, 99, 0))
                 assertThat(computer?.process(42)).isEmpty()
-                assertThat(computer?.program).isEqualTo(arrayOf(2, 4, 4, 5, 99, 9801))
+                assertThat(computer?.program).startsWith(2, 4, 4, 5, 99, 9801)
             }
 
             @Test
             fun aocDay2Sample4() {
                 computer = IntComputer(arrayOf(1, 1, 1, 4, 99, 5, 6, 0, 99))
                 assertThat(computer?.process(42)).isEmpty()
-                assertThat(computer?.program).isEqualTo(arrayOf(30, 1, 1, 4, 2, 5, 6, 0, 99))
+                assertThat(computer?.program).startsWith(30, 1, 1, 4, 2, 5, 6, 0, 99)
             }
 
             @Test
@@ -55,27 +58,27 @@ class IntComputerTest {
             fun aocDay5Sample2() {
                 computer = IntComputer(arrayOf(1002, 4, 3, 4, 33))
                 assertThat(computer?.process(42)).isEmpty()
-                assertThat(computer?.program).isEqualTo(arrayOf(1002, 4, 3, 4, 99))
+                assertThat(computer?.program).startsWith(1002, 4, 3, 4, 99)
             }
         }
 
         @Test
         fun solutionPart1() {
-            assertThat(process(intArrayFromCsvInputForDay(2019,2), 12, 2)).isEqualTo(5534943)
+            assertThat(process(longArrayFromCsvInputForDay(2019,2), 12, 2)).isEqualTo(5534943L)
         }
 
         @Test
         fun solutionPart2() {
-            assertThat(process(intArrayFromCsvInputForDay(2019,2), 76, 3)).isEqualTo(19690720)
+            assertThat(process(longArrayFromCsvInputForDay(2019,2), 76, 3)).isEqualTo(19690720L)
         }
     }
 
     @Nested
-    inner class ParameterModeOf {
+    inner class ParamModeOf {
 
         @Test
         fun default() {
-            assertThat(IntComputer.ParameterMode.of("2", 1)).isEqualTo(IntComputer.ParameterMode.POSITION)
+            assertThat(ParamMode.of("2", 1)).isEqualTo(POSITION)
         }
 
         @Nested
@@ -83,17 +86,17 @@ class IntComputerTest {
 
             @Test
             fun normalOp1() {
-                assertThat(IntComputer.ParameterMode.of("1002", 1)).isEqualTo(IntComputer.ParameterMode.POSITION)
+                assertThat(ParamMode.of("1002", 1)).isEqualTo(POSITION)
             }
 
             @Test
             fun normalOp2() {
-                assertThat(IntComputer.ParameterMode.of("1002", 2)).isEqualTo(IntComputer.ParameterMode.IMMEDIATE)
+                assertThat(ParamMode.of("1002", 2)).isEqualTo(IMMEDIATE)
             }
 
             @Test
             fun normalOp3() {
-                assertThat(IntComputer.ParameterMode.of("1002", 3)).isEqualTo(IntComputer.ParameterMode.POSITION)
+                assertThat(ParamMode.of("1002", 3)).isEqualTo(POSITION)
             }
         }
     }
@@ -267,7 +270,7 @@ class IntComputerTest {
 
             @BeforeEach
             fun initComputer() {
-                computer = IntComputer(intArrayFromCsvInputForDay(2019,5))
+                computer = IntComputer(longArrayFromCsvInputForDay(2019,5))
             }
 
             @Test
@@ -278,6 +281,45 @@ class IntComputerTest {
             @Test
             fun part2() {
                 assertThat(computer?.process(5)).containsOnly(513116)
+            }
+        }
+    }
+
+    @Nested
+    inner class Day9 {
+
+        @Test
+        fun sample1() {
+            val program = arrayOf(109L,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99)
+            assertThat(IntComputer(program, 1000).process()).isEqualTo(program.asList())
+        }
+
+        @Test
+        fun sample2() {
+            assertThat(IntComputer(arrayOf(1102,34915192,34915192,7,4,7,99,0)).process()[0].toString().length).isEqualTo(16)
+        }
+
+        @Test
+        fun sample3() {
+            assertThat(IntComputer(arrayOf(104,1125899906842624,99)).process()).containsOnly(1125899906842624)
+        }
+
+        @Nested
+        inner class Solution {
+
+            @BeforeEach
+            fun initComputer() {
+                computer = IntComputer(longArrayFromCsvInputForDay(2019,9), 1500)
+            }
+
+            @Test
+            fun part1() {
+                assertThat(computer?.process(1)).containsOnly(2714716640)
+            }
+
+            @Test
+            fun part2() {
+                assertThat(computer?.process(2)).containsOnly(58879)
             }
         }
     }

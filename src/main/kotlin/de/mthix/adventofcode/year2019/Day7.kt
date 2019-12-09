@@ -1,7 +1,7 @@
 package de.mthix.adventofcode.year2019
 
 import com.marcinmoskala.math.permutations
-import de.mthix.adventofcode.intArrayFromCsvInputForDay
+import de.mthix.adventofcode.longArrayFromCsvInputForDay
 
 /**
 ```
@@ -93,14 +93,14 @@ Try every combination of the new phase settings on the amplifier feedback loop. 
  * See also [https://adventofcode.com/2019/day/7].
  */
 fun main() {
-    val phaseSettings1 = (0..4).toList().permutations()
+    val phaseSettings1 = (0L..4L).toList().permutations()
     val solutionPart1 = phaseSettings1.maxBy { calculateSignal(it) }
 
-    val phaseSettings2 = (5..9).toList().permutations()
+    val phaseSettings2 = (5L..9L).toList().permutations()
     val solutionPart2 = phaseSettings2.maxBy { calculateSignal(it) }
 
     println("Solution for step 1: $solutionPart1 ${calculateSignal(solutionPart1!!)}")
     println("Solution for step 2: $solutionPart2 ${calculateSignal(solutionPart2!!)}")
 }
 
-fun calculateSignal(phaseSetting:List<Int>)= Circuit(intArrayFromCsvInputForDay(2019,7), phaseSetting).calculate()
+fun calculateSignal(phaseSetting:List<Long>)= Circuit(longArrayFromCsvInputForDay(2019,7), phaseSetting).calculate()
