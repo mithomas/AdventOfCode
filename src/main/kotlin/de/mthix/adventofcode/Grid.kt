@@ -6,13 +6,13 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, var cur
     var grid = List(height) { MutableList(width) { initialValue } }
     var visited = mutableSetOf(Pair(curX, curY))
 
-    fun getCurrent() = grid[curX][curY]
+    fun getCurrent() = grid[curY][curX]
     fun setCurrent(value: T) {
-        set(value, curX, curY)
+        set(value, curY, curX)
     }
 
     fun set(value: T, x: Int, y: Int) {
-        grid[x][y] = value
+        grid[y][x] = value
     }
 
     fun moveBy(offsetX: Int, offsetY: Int) {
@@ -25,6 +25,8 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, var cur
 
         visited.add(Pair(curX, curY))
     }
+
+    fun cells() = grid.flatten()
 
     fun print() {
         grid.forEach { line ->

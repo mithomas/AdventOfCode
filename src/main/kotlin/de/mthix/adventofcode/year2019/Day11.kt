@@ -103,7 +103,7 @@ class HullGrid(width: Int, height: Int, initialValue: Long, curX: Int, curY: Int
 
 class Robot() {
     val cpu = IntComputer(longArrayFromCsvInputForDay(2019,11), 2000)
-    var grid = HullGrid(60, 130, BLACK, 113, 6)
+    var grid = HullGrid(113, 60, BLACK, 10, 10)
 
     var direction = UP
 
