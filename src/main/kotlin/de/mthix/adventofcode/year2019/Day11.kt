@@ -1,5 +1,6 @@
 package de.mthix.adventofcode.year2019
 
+import de.mthix.adventofcode.Grid
 import de.mthix.adventofcode.longArrayFromCsvInputForDay
 import de.mthix.adventofcode.year2019.Direction.*
 
@@ -81,44 +82,42 @@ Based on the Space Law Space Brochure that the Space Police attached to one of y
  *
  * See also [https://adventofcode.com/2019/day/11].
  */
-
 fun main() {
     val ehpr1 = Robot()
     ehpr1.paint()
 
-    println("Solution 1: ${ehpr1.visited.count()}")
+    println("Solution 1: ${ehpr1.grid.visited.count()}")
 
     val ehpr2 = Robot()
-    ehpr2.grid[ehpr2.curX][ehpr2.curY] = 1L
+    ehpr2.grid.setCurrent(WHITE)
     ehpr2.paint()
+    ehpr2.grid.print()
+}
 
-    println(ehpr2.grid.map { it.map { if(it == 1L) "X" else " "  }.joinToString("") + "\n" })
+val BLACK = 0L
+val WHITE = 1L
+
+class HullGrid(width: Int, height: Int, initialValue: Long, curX: Int, curY: Int) : Grid<Long>(width, height, initialValue, curX, curY) {
+    override fun mapToOutput(value: Long) = if(value == WHITE) 'X' else ' '
 }
 
 class Robot() {
     val cpu = IntComputer(longArrayFromCsvInputForDay(2019,11), 2000)
-    var visited = mutableSetOf<Pair<Int,Int>>()
-
-    var grid = Array(200) {Array(70) { 0L } }
-
-    var curX = 100
-    var curY = 10
+    var grid = HullGrid(60, 130, BLACK, 113, 6)
 
     var direction = UP
 
     fun paint() {
         do {
-            val output = cpu.process(grid[curX][curY])
-            visited.add(Pair(curX,curY))
-
-            grid[curX][curY] = output[0]
+            val output = cpu.process(grid.getCurrent())
+            grid.setCurrent(output[0])
             direction = direction.turn(output[1])
 
             when(direction) {
-                UP -> curX--
-                DOWN -> curX++
-                LEFT -> curY--
-                RIGHT -> curY++
+                UP -> grid.moveBy(-1,0)
+                DOWN -> grid.moveBy(1,0)
+                LEFT -> grid.moveBy(0,-1)
+                RIGHT -> grid.moveBy(0,1)
             }
 
         } while(!cpu.completed)
