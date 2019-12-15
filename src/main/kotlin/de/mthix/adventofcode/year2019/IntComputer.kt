@@ -4,7 +4,7 @@ import de.mthix.adventofcode.year2019.IntComputer.ParamMode.*
 import org.apache.commons.lang3.builder.ToStringBuilder
 import java.util.*
 
-class IntComputer(program: Array<Long>, memorySize: Int = program.size) {
+class IntComputer(program: Array<Long>, memorySize: Int = 5000) {
 
     val program: Array<Long> = Array(memorySize) { 0L }
 
@@ -25,8 +25,8 @@ class IntComputer(program: Array<Long>, memorySize: Int = program.size) {
     }
 
     fun process(input: MutableList<Long>): List<Long> {
-        println("input:       $input")
-        println("program size:${program.size}\n")
+        //println("input:       $input")
+        //println("program size:${program.size}\n")
         val output = LinkedList<Long>()
 
         var instruction = Instruction(program, index, relativeBase)
