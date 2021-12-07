@@ -1,7 +1,6 @@
 package de.mthix.adventofcode.year2019
 
-import de.mthix.adventofcode.intsOf
-import de.mthix.adventofcode.intsOfDay
+import de.mthix.adventofcode.intStreamOfDay
 
 /**
 ```
@@ -73,7 +72,7 @@ fun main() {
 
     val width = 25
     val height = 6
-    val imageStream = intsOfDay(2019, 8)
+    val imageStream = intStreamOfDay(2019, 8)
 
     val minZeroLayer = imageStream
             .chunked(width * height)
