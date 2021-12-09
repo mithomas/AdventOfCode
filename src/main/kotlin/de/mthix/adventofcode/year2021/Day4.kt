@@ -1,37 +1,23 @@
 package de.mthix.adventofcode.year2021
 
-import de.mthix.adventofcode.intsOf
+import de.mthix.adventofcode.BaseGrid
 import de.mthix.adventofcode.linesOfDay
-import de.mthix.adventofcode.year2019.RepairDroid
 
-data class BingoField(val value : Int, val x : Int, val y : Int, var hit : Boolean = false) {
+data class BingoInfo(val value : Int, var hit : Boolean = false) {
 
     override fun toString() : String {
        return "$value:" + (if (hit)  "!" else " ")
     }
 }
 
-class BingoBoard(val board: List<BingoField>, val size : Int = 5) {
-
-    override fun toString() : String {
-        var result = ""
-
-        for (i in 0 until size) {
-            for (j in 0 until size) {
-                result += board[i*size+j]
-            }
-            result += "\n"
-        }
-
-        return result
-    }
+class BingoBoard(private val board: List<List<BingoInfo>>) : BaseGrid<BingoInfo>(board) {
 
     fun markDrawn(drawn : Int) {
-        board.filter { it.value == drawn }.forEach { it.hit = true }
+        nodes.filter { it.value.value == drawn }.forEach { it.value.hit = true }
     }
 
     fun bingo() : Boolean {
-        return board.groupBy { it.x }.any { it.value.all { it.hit } } || board.groupBy { it.y }.any { it.value.all { it.hit } }
+        return nodes.groupBy { it.x }.any { it.value.all { it.value.hit } } || nodes.groupBy { it.y }.any { it.value.all { it.value.hit } }
     }
 }
 
@@ -41,12 +27,13 @@ fun main() {
     val boards : MutableList<BingoBoard> = mutableListOf()
 
     for (i in 2..linesOfDay.size step 6) {
-        val board : MutableList<BingoField> = mutableListOf()
+        val fields = mutableListOf<List<BingoInfo>>()
 
         for (j in 0..4) {
-            board += linesOfDay[i+j].split(" ").filter { it.isNotEmpty() }.mapIndexed() { idx,it -> BingoField(it.toInt(), j, idx) }
+            fields += linesOfDay[i+j].split(" ").filter { it.isNotEmpty() }.map { BingoInfo(it.toInt()) }
         }
-        boards += BingoBoard(board)
+
+        boards += BingoBoard(fields)
     }
 
     val drawnNumbers = linesOfDay[0].split(",").map { it.toInt() }.toMutableList()
@@ -74,5 +61,5 @@ fun main() {
     }
 
     println(finalBoard)
-    println(finalBoard.board.filter { !it.hit }.sumBy { it.value } * drawn)
+    println(finalBoard.nodes.filter { !it.value.hit }.sumBy { it.value.value } * drawn)
 }
