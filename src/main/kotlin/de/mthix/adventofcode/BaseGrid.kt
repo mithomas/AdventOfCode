@@ -3,20 +3,33 @@ package de.mthix.adventofcode
 class GridNode<T>(val x : Int, val y : Int, var value : T, private val grid: BaseGrid<T>) {
 
     /* horizontally/vertically adjacent, not diagonally */
-    fun getNeighbors() : List<GridNode<T>> {
+    fun getNeighbors(includeDiagonally : Boolean = false) : List<GridNode<T>> {
         val neighbors = mutableListOf<GridNode<T>>()
 
-        if (x > 0) neighbors.add(grid.getNode(x-1, y)) // over
-        if (x < grid.height-1) neighbors.add(grid.getNode(x+1, y)) // under
-        if (y > 0) neighbors.add(grid.getNode(x, y-1)) // left
-        if (y < grid.width-1) neighbors.add(grid.getNode(x, y+1)) // right
+        val isTop = x <= 0
+        val isBottom = x >= grid.height-1
+        val isMostLeft =  y <= 0
+        val isMostRight = y >= grid.width-1
+
+
+        if (!isTop) neighbors.add(grid.getNode(x-1, y)) // over
+        if (!isBottom) neighbors.add(grid.getNode(x+1, y)) // under
+        if (!isMostLeft) neighbors.add(grid.getNode(x, y-1)) // left
+        if (!isMostRight) neighbors.add(grid.getNode(x, y+1)) // right
+
+        if (includeDiagonally) {
+            if (!isTop && !isMostLeft) neighbors.add(grid.getNode(x-1, y-1)) // left over
+            if (!isBottom && !isMostLeft) neighbors.add(grid.getNode(x+1, y-1)) // left under
+            if (!isBottom && !isMostRight) neighbors.add(grid.getNode(x+1, y+1)) // right under
+            if (!isTop && !isMostRight) neighbors.add(grid.getNode(x-1, y+1)) // right over
+        }
 
         return neighbors
     }
 
     /* horizontally/vertically adjacent, not diagonally */
-    fun getNeighborValues() : List<T> {
-        return getNeighbors().map { it.value }
+    fun getNeighborValues(includeDiagonally : Boolean = false) : List<T> {
+        return getNeighbors(includeDiagonally).map { it.value }
     }
 
     override fun toString() : String {
@@ -24,7 +37,7 @@ class GridNode<T>(val x : Int, val y : Int, var value : T, private val grid: Bas
     }
 }
 
-open class BaseGrid<T>(elements : List<List<T>>) {
+open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
 
     val width : Int = elements[0].size
     val height : Int = elements.size
@@ -35,7 +48,7 @@ open class BaseGrid<T>(elements : List<List<T>>) {
 
         for (x in 0 until height) {
             for (y in 0 until width) {
-                grid += GridNode(x, y, elements[x][y],this)
+                grid += GridNode(x, y, transform(elements[x][y]),this)
             }
         }
 
@@ -75,10 +88,12 @@ open class BaseGrid<T>(elements : List<List<T>>) {
         return result
     }
 
+
+
     companion object {
 
-        fun fromUnseparatedIntLines(lines : List<String>) : BaseGrid<Int> {
-            return BaseGrid(lines.map { it.map { it.toString().toInt() } })
+        fun fromUnseparatedIntLines(lines : List<String>) : List<List<Int>> {
+            return lines.map { it.map { it.toString().toInt() } }
         }
     }
 }

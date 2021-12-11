@@ -5,7 +5,7 @@ import de.mthix.adventofcode.GridNode
 import de.mthix.adventofcode.linesOfDay
 
 fun main() {
-    val heatmap = BaseGrid.fromUnseparatedIntLines(linesOfDay(2021,9, false))
+    val heatmap = BaseGrid(BaseGrid.fromUnseparatedIntLines(linesOfDay(2021,9, 0))) { it }
     println(heatmap)
 
     val lowPoints = heatmap.nodes.filter { it.getNeighborValues().all { neighbourValue -> neighbourValue > it.value } }

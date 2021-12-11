@@ -10,7 +10,7 @@ data class BingoInfo(val value : Int, var hit : Boolean = false) {
     }
 }
 
-class BingoBoard(private val board: List<List<BingoInfo>>) : BaseGrid<BingoInfo>(board) {
+class BingoBoard(private val board: List<List<Int>>) : BaseGrid<BingoInfo>(board, { BingoInfo(it) } ) {
 
     fun markDrawn(drawn : Int) {
         nodes.filter { it.value.value == drawn }.forEach { it.value.hit = true }
@@ -27,10 +27,10 @@ fun main() {
     val boards : MutableList<BingoBoard> = mutableListOf()
 
     for (i in 2..linesOfDay.size step 6) {
-        val fields = mutableListOf<List<BingoInfo>>()
+        val fields = mutableListOf<List<Int>>()
 
         for (j in 0..4) {
-            fields += linesOfDay[i+j].split(" ").filter { it.isNotEmpty() }.map { BingoInfo(it.toInt()) }
+            fields += linesOfDay[i+j].split(" ").filter { it.isNotEmpty() }.map { it.toInt() }
         }
 
         boards += BingoBoard(fields)

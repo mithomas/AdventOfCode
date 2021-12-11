@@ -37,7 +37,7 @@ class Line(val line : String, ocean : OceanFloor) {
     }
 }
 
-class OceanFloor(size : Int = 1000) : BaseGrid<Int>(List(size) { List(size) { 0 } }) {
+class OceanFloor(size : Int = 1000) : BaseGrid<Int>(List(size) { List(size) { 0 } }, { it }) {
 
     fun register(lineCoords : List<GridNode<Int>>) {
         println("register line: $lineCoords")

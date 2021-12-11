@@ -31,7 +31,7 @@ data class ParseResult(val state : State, val chunkStartElements : List<String>)
 
 
 fun main() {
-    val lines = linesOfDay(2021,10,false)
+    val lines = linesOfDay(2021,10,0)
 
     val parsedLines = lines.map { parse(it, listOf()) }
     println("\n\n $parsedLines")
