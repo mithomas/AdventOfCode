@@ -1,9 +1,49 @@
 package de.mthix.adventofcode
 
-class GridNode<T>(val x : Int, val y : Int, var value : T, private val grid: BaseGrid<T>) {
+abstract class BaseNode<T>(var value : T) {
 
-    /* horizontally/vertically adjacent, not diagonally */
-    fun getNeighbors(includeDiagonally : Boolean = false) : List<GridNode<T>> {
+    abstract fun getNeighbors() : List<BaseNode<T>>
+    abstract fun getNeighborValues() : List<T>
+
+    override fun toString() : String {
+        return "$value"
+    }
+}
+
+/**
+ * @param visitationLimit 0 for no visitation limit
+ */
+class GraphNode<T>(val id : String, var visitationLimit : Int = 0, value : T) : BaseNode<T>(value) {
+
+    private val neighbors = mutableListOf<GraphNode<T>>()
+
+    fun addNeighbor(node : GraphNode<T>) {
+        neighbors.add(node)
+    }
+
+    override fun getNeighbors(): List<GraphNode<T>> {
+        return neighbors
+    }
+
+    override fun getNeighborValues(): List<T> {
+        return neighbors.map { value }
+    }
+
+    fun hasVisitationLimit() = visitationLimit != 0
+
+    override fun equals(other: Any?) = (other is GraphNode<*>) && id == other.id
+    override fun hashCode(): Int = id.hashCode()
+
+    override fun toString() : String {
+        return "$id:$visitationLimit:$value->${neighbors.map { it.id }}"
+    }
+}
+
+
+class GridNode<T>(val x : Int, val y : Int, value : T, private val grid: BaseGrid<T>) : BaseNode<T>(value) {
+
+    override fun getNeighbors() : List<GridNode<T>> = getNeighbors(false)
+    fun getNeighbors(includeDiagonally : Boolean) : List<GridNode<T>> {
         val neighbors = mutableListOf<GridNode<T>>()
 
         val isTop = x <= 0
@@ -27,13 +67,59 @@ class GridNode<T>(val x : Int, val y : Int, var value : T, private val grid: Bas
         return neighbors
     }
 
-    /* horizontally/vertically adjacent, not diagonally */
-    fun getNeighborValues(includeDiagonally : Boolean = false) : List<T> {
-        return getNeighbors(includeDiagonally).map { it.value }
-    }
+    override fun getNeighborValues() : List<T> = getNeighborValues(false)
+    fun getNeighborValues(includeDiagonally : Boolean) = getNeighbors(includeDiagonally).map { it.value }
 
     override fun toString() : String {
         return "$value[$x,$y]"
+    }
+}
+
+
+class Graph<T>() {
+
+    val nodes = mutableMapOf<String, GraphNode<T>>()
+
+    fun registerEdge(id1 : String, id2: String, initNode : (String) -> GraphNode<T>, undirected : Boolean= true) {
+        val node1 = nodes.getOrPut(id1) { initNode(id1) }
+        val node2 = nodes.getOrPut(id2) { initNode(id2) }
+
+        node1.addNeighbor(node2)
+        if(undirected) node2.addNeighbor(node1)
+    }
+
+    fun findAllPaths(startId : String, endId : String): MutableList<List<String>> {
+        val allPaths = mutableListOf<List<String>>()
+        findAllPaths(nodes[startId], nodes[endId], allPaths, mutableListOf(), nodes.keys.associateWith { 0 }.toMutableMap() )
+        return allPaths
+    }
+
+    private fun findAllPaths(current : GraphNode<T>?,
+                             end : GraphNode<T>?,
+                             allPaths : MutableList<List<String>>,
+                             currentPath : MutableList<String>,
+                             visited : MutableMap<String, Int?>) {
+
+        if(current == null || end == null || (current.hasVisitationLimit() && visited[current.id]!! >= current.visitationLimit)) {
+            return
+        }
+
+        currentPath.add(current.id)
+
+        if(current.hasVisitationLimit()) { visited[current.id] = visited[current.id]!!+1 }
+
+        if(current == end) {
+            allPaths.add(currentPath)
+        }
+
+        current.getNeighbors().forEach { findAllPaths(it, end, allPaths, currentPath.toMutableList(), visited) }
+
+        currentPath.removeAt(currentPath.size-1)
+        if(current.hasVisitationLimit()) { visited[current.id] = visited[current.id]!!-1 }
+    }
+
+    override fun toString() : String {
+        return nodes.values.toString()
     }
 }
 
@@ -87,8 +173,6 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
 
         return result
     }
-
-
 
     companion object {
 
