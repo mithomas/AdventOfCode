@@ -1,5 +1,8 @@
 package de.mthix.adventofcode
 
+import java.util.*
+import kotlin.math.sign
+
 abstract class BaseNode<T>(var value : T) {
 
     abstract fun getNeighbors() : List<BaseNode<T>>
@@ -123,6 +126,9 @@ class Graph<T>() {
     }
 }
 
+/**
+ * @param elements outer list over height, inner list over width
+ */
 open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
 
     val width : Int = elements[0].size
@@ -132,9 +138,9 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
     init {
         val grid: MutableList<GridNode<T>> = mutableListOf()
 
-        for (x in 0 until height) {
-            for (y in 0 until width) {
-                grid += GridNode(x, y, transform(elements[x][y]),this)
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                grid += GridNode(x, y, transform(elements[y][x]),this)
             }
         }
 
@@ -146,7 +152,7 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
     }
 
     fun get(x : Int, y : Int) : T {
-        return nodes[x*width+y].value
+        return nodes[x+y*width].value
     }
 
     fun set(node : GridNode<T>, value : T) {
@@ -154,19 +160,31 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
     }
 
     fun set(x : Int, y : Int, value : T) {
-        nodes[x*width+y].value = value
+        nodes[x+y*width].value = value
     }
 
     fun getNode(x : Int, y : Int) : GridNode<T> {
-        return nodes[x*width+y]
+        return nodes[x+y*width]
     }
 
     override fun toString() : String {
+        return toString(" ") { it.toString() }
+    }
+
+    fun toValueString() : String {
+        return toString(" ") { it.value.toString().padStart(4) }
+    }
+
+    fun toBoolString() : String {
+        return toString("") { if (it.value as Boolean) "█" else "." }
+    }
+
+    fun toString(nodeSeparator : String, render : (GridNode<T>) -> String) : String {
         var result = ""
 
-        for (x in 0 until height) {
-            for (y in 0 until width) {
-                result += "${nodes[x*width+y]} "
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                result += "${render(nodes[x+y*width])}$nodeSeparator"
             }
             result += "\n"
         }
@@ -176,8 +194,14 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) {
 
     companion object {
 
+        /* when returning a list of list as input => outer list gives height/y, inner gives width/x! */
+
         fun fromUnseparatedIntLines(lines : List<String>) : List<List<Int>> {
             return lines.map { it.map { it.toString().toInt() } }
+        }
+
+        fun emptyGrid(width : Int, height : Int) : List<List<Int>> {
+            return List(height) { List(width) { 0 } }
         }
     }
 }

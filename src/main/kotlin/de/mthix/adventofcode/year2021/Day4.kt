@@ -60,6 +60,6 @@ fun main() {
         }
     }
 
-    println(finalBoard)
+    println(finalBoard.toValueString())
     println(finalBoard.nodes.filter { !it.value.hit }.sumBy { it.value.value } * drawn)
 }
