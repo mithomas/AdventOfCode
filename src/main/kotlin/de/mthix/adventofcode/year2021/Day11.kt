@@ -38,18 +38,18 @@ class OctopusGrid(octopusEnergyLevels : List<List<Int>>) : BaseGrid<Octopus>(oct
     fun step() : Boolean {
         var allHaveFlashed = false
 
-        nodes.forEach { it.value.incEnergy() }
+        nodeList.forEach { it.value.incEnergy() }
 
         var flashingNodes = listOf<GridNode<Octopus>>()
         do {
-            flashingNodes = nodes.filter { it.value.flashes() }
+            flashingNodes = nodeList.filter { it.value.flashes() }
             allFlashes += flashingNodes.size
 
             flashingNodes.map { it.getNeighbors(true) }.flatten().forEach { it.value.incEnergy() }
         } while (flashingNodes.isNotEmpty())
 
-        allHaveFlashed = nodes.all { it.value.hasFlashedInStep }
-        nodes.forEach { it.value.completeStep() }
+        allHaveFlashed = nodeList.all { it.value.hasFlashedInStep }
+        nodeList.forEach { it.value.completeStep() }
 
         return allHaveFlashed
     }

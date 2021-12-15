@@ -13,11 +13,11 @@ data class BingoInfo(val value : Int, var hit : Boolean = false) {
 class BingoBoard(private val board: List<List<Int>>) : BaseGrid<BingoInfo>(board, { BingoInfo(it) } ) {
 
     fun markDrawn(drawn : Int) {
-        nodes.filter { it.value.value == drawn }.forEach { it.value.hit = true }
+        nodeList.filter { it.value.value == drawn }.forEach { it.value.hit = true }
     }
 
     fun bingo() : Boolean {
-        return nodes.groupBy { it.x }.any { it.value.all { it.value.hit } } || nodes.groupBy { it.y }.any { it.value.all { it.value.hit } }
+        return nodeList.groupBy { it.x }.any { it.value.all { it.value.hit } } || nodeList.groupBy { it.y }.any { it.value.all { it.value.hit } }
     }
 }
 
@@ -61,5 +61,5 @@ fun main() {
     }
 
     println(finalBoard.toValueString())
-    println(finalBoard.nodes.filter { !it.value.hit }.sumBy { it.value.value } * drawn)
+    println(finalBoard.nodeList.filter { !it.value.hit }.sumBy { it.value.value } * drawn)
 }

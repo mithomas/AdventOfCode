@@ -8,7 +8,7 @@ fun main() {
     val heatmap = BaseGrid(BaseGrid.fromUnseparatedIntLines(linesOfDay(2021,9, 0))) { it }
     println(heatmap)
 
-    val lowPoints = heatmap.nodes.filter { it.getNeighborValues().all { neighbourValue -> neighbourValue > it.value } }
+    val lowPoints = heatmap.nodeList.filter { it.getNeighborValues().all { neighbourValue -> neighbourValue > it.value } }
 
     val riskLevelSum = lowPoints.map { it.value+1 }.sum()
     println("risk level sum: $riskLevelSum")

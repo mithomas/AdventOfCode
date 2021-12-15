@@ -36,7 +36,7 @@ fun main() {
         var newX : Int
         var newY : Int
 
-        paper.nodes.filter { it.value }.forEach { oldNode ->
+        paper.nodeList.filter { it.value }.forEach { oldNode ->
             if(foldVertically && oldNode.x > it.second) {
                 newX = it.second - abs(oldNode.x - it.second)
             } else {
@@ -53,7 +53,7 @@ fun main() {
         }
 
         paper = newPaper
-        println(paper.nodes.filter { it.value }.size)
+        println(paper.nodeList.filter { it.value }.size)
     }
 
     println("\n${paper.toBoolString()}")

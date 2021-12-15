@@ -13,10 +13,10 @@ class Line(val line : String, ocean : OceanFloor) {
         val c = line.split("->").map { it.trim() }
 
         val startXY = c[0].split(",").map { it.toInt() }
-        val start = GridNode(startXY[0], startXY[1],1, ocean)
+        val start = GridNode(startXY[0], startXY[1],1,1, ocean)
 
         val endXY = c[1].split(",").map { it.toInt() }
-        val end = GridNode(endXY[0], endXY[1], 1, ocean)
+        val end = GridNode(endXY[0], endXY[1], 1, 1, ocean)
 
         var offsetY = (end.y-start.y).sign
         var offsetX = (end.x-start.x).sign
@@ -31,7 +31,7 @@ class Line(val line : String, ocean : OceanFloor) {
                 x += offsetX
                 y += offsetY
 
-                coords.add(GridNode(x,y, 1, ocean))
+                coords.add(GridNode(x,y, 1,1, ocean))
             }
         }
     }
@@ -51,5 +51,5 @@ fun main() {
     val lines = linesOfDay(2021,5).map { Line(it,floor) }.filter { it.coords.isNotEmpty() }
 
     lines.forEach { floor.register(it.coords) }
-    println(floor.nodes.filter { it.value >= 2 }.size)
+    println(floor.nodeList.filter { it.value >= 2 }.size)
 }

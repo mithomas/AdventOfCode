@@ -12,14 +12,14 @@ fun main() {
     }
 
     println(graph)
-    println(graph.findAllPaths("start", "end").size)
+    println(graph.findAllPathsByDFS("start", "end").size)
 
     val allPaths = mutableSetOf<List<String>>()
     graph.nodes
         .filter { it.value.visitationLimit == 1 && !(it.key in listOf("start", "end")) }
         .forEach {
             it.value.visitationLimit = 2
-            allPaths.addAll(graph.findAllPaths("start", "end"))
+            allPaths.addAll(graph.findAllPathsByDFS("start", "end"))
             it.value.visitationLimit = 1
         }
     println(allPaths.size)

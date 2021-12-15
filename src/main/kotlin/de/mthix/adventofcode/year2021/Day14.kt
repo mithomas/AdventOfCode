@@ -6,13 +6,13 @@ import java.math.BigInteger.*
 import java.util.*
 
 fun main() {
-    val lines = linesOfDay(2021,14,1)
+    val lines = linesOfDay(2021,14,2)
 
     val counts = getNaivePolymerCount(lines)
     println("polymer count: " + counts.toSortedMap().toString() + " -> " + (counts.values.max()!! - counts.values.min()!!))
     println("\n\n")
 
-    val largeCounts = morePerformantSolution(lines, 10)
+    val largeCounts = morePerformantSolution(lines, 40)
     println("polymer count: " + largeCounts.toSortedMap().toString() + " -> " + (largeCounts.values.max()!! - largeCounts.values.min()!!))
 }
 
