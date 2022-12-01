@@ -7,7 +7,7 @@ fun main() {
         .joinToString(" ")
         .split("  ")
         .map { it.split(" ") }
-        .map { it.sumBy { it.toInt() }}
+        .map { it.sumOf { it.toInt() }}
         .sortedBy { it }
         .reversed()
 
