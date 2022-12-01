@@ -2,7 +2,7 @@ package de.mthix.adventofcode.year2019
 
 import de.mthix.adventofcode.Grid
 import de.mthix.adventofcode.longArrayFromCsvInputForDay
-import de.mthix.adventofcode.year2019.Direction.*
+import de.mthix.adventofcode.Direction.*
 
 /**
 ```
@@ -99,60 +99,19 @@ val WHITE = 1L
 
 class HullGrid(width: Int, height: Int, initialValue: Long, curX: Int, curY: Int) : Grid<Long>(width, height, initialValue, curX, curY) {
     override fun mapToOutput(value: Long) = if(value == WHITE) 'X' else ' '
+    override fun isBlocked(value: Long) = false
 }
 
 class Robot() {
     val cpu = IntComputer(longArrayFromCsvInputForDay(2019,11), 2000)
     var grid = HullGrid(113, 60, BLACK, 10, 10)
 
-    var direction = UP
-
     fun paint() {
         do {
             val output = cpu.process(grid.getCurrent())
             grid.setCurrent(output[0])
-            direction = direction.turn(output[1])
-
-            when(direction) {
-                UP -> grid.moveBy(-1,0)
-                DOWN -> grid.moveBy(1,0)
-                LEFT -> grid.moveBy(0,-1)
-                RIGHT -> grid.moveBy(0,1)
-            }
-
+            grid.direction = grid.direction.turn(output[1])
+            grid.moveForward()
         } while(!cpu.completed)
-    }
-}
-
-enum class Direction {
-    UP,
-    LEFT,
-    DOWN,
-    RIGHT;
-
-    fun turn(direction:Long):Direction {
-        when(direction) {
-            0L -> return left()
-            1L -> return right()
-            else -> throw IllegalArgumentException("Wrong direction: $direction")
-        }
-    }
-
-    fun left():Direction {
-        when(this) {
-            UP -> return LEFT
-            LEFT -> return DOWN
-            DOWN -> return RIGHT
-            RIGHT -> return UP
-        }
-    }
-
-    fun right():Direction {
-        when(this) {
-            UP -> return RIGHT
-            LEFT -> return UP
-            DOWN -> return LEFT
-            RIGHT -> return DOWN
-        }
     }
 }

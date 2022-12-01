@@ -131,6 +131,8 @@ class ArcadeGrid(width: Int, height: Int, initialValue: Tile) : Grid<Tile>(width
             Tile.BALL -> 'o'
         }
     }
+
+    override fun isBlocked(value: Tile) = false
 }
 
 enum class Tile(val id: Long) {
