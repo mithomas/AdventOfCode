@@ -12,12 +12,4 @@ fun main() {
 fun findStartOfPacket(stream: String) = findMarker(4, stream)
 fun findStartOfMessage(stream: String) = findMarker(14, stream)
 
-fun findMarker(markerLength : Int, stream: String): Int {
-    val list = stream.toList()
-
-    for(i in markerLength..list.size) {
-        if (list.subList(i-markerLength,i).toSet().size == markerLength) return i
-    }
-
-    throw NoSuchElementException()
-}
+fun findMarker(markerLength : Int, stream: String) = stream.windowed(markerLength).indexOfFirst { it.toList().distinct().size == markerLength } + markerLength
