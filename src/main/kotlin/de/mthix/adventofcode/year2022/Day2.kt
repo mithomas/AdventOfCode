@@ -28,6 +28,6 @@ fun main() {
     val linesOfDay = linesOfDay(2022, 2)
 
     println(linesOfDay)
-    println("Puzzle 1: " + linesOfDay.map { points[it] }.filterNotNull().sumOf { it })
-    println("Puzzle 2: " + linesOfDay.map { strategy[it] }.filterNotNull().sumOf { it })
+    println("Puzzle 1: " + linesOfDay.mapNotNull { points[it] }.sumOf { it })
+    println("Puzzle 2: " + linesOfDay.mapNotNull { strategy[it] }.sumOf { it })
 }
