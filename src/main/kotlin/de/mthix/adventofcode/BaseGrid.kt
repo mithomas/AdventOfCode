@@ -207,6 +207,39 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) : Tra
         return nodeList[x+y*width]
     }
 
+    fun getRows() : List<List<GridNode<T>>> {
+        val rows = mutableListOf<List<GridNode<T>>>()
+
+        for(i in 0..height) {
+            rows.add(nodeList.filter { it.y == i })
+        }
+
+        return rows
+    }
+
+    fun getColumns() : List<List<GridNode<T>>> {
+        val rows = mutableListOf<List<GridNode<T>>>()
+
+        for(i in 0..width) {
+            rows.add(nodeList.filter { it.x == i })
+        }
+
+        return rows
+    }
+
+    /** in viewing direction */
+    fun getNorth(node: GridNode<T>) = nodeList.filter { it.x == node.x && it.y < node.y }.sortedWith(compareBy<GridNode<T>> { it.x }.thenByDescending { it.y })
+
+    /** in viewing direction */
+    fun getSouth(node: GridNode<T>) = nodeList.filter { it.x == node.x && it.y > node.y }.sortedWith(compareBy<GridNode<T>> { it.x }.thenBy { it.y })
+
+    /** in viewing direction */
+    fun getEast(node: GridNode<T>) = nodeList.filter { it.x > node.x && it.y == node.y }.sortedWith(compareBy<GridNode<T>> { it.x }.thenBy { it.y })
+
+    /** in viewing direction */
+    fun getWest(node: GridNode<T>) = nodeList.filter { it.x < node.x && it.y == node.y }.sortedWith(compareByDescending<GridNode<T>> { it.x }.thenBy { it.y })
+
+
     override fun toString() : String {
         return toString(" ") { it.toString() }
     }

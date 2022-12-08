@@ -122,10 +122,10 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
         val source = PathElementOld(start, 0)
 
         // keep track of visited cells; marking blocked cells as visited. 
-        var visited = List(height) { y -> MutableList(width) { x -> isBlocked(get(x, y)) } }
+        val visited = List(height) { y -> MutableList(width) { x -> isBlocked(get(x, y)) } }
 
         // applying BFS on matrix cells starting from source 
-        var q = ArrayDeque<PathElementOld>()
+        val q = ArrayDeque<PathElementOld>()
         q.push(source)
         visited[source.y][source.x] = true
         while (!q.isEmpty()) {
