@@ -3,7 +3,7 @@ package de.mthix.adventofcode
 import java.util.*
 
 /** Top-left = 0,0 */
-abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: Int = 0, curY: Int = 0) {
+abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: Int = 0, curY: Int = 0, val name: String = "") {
 
     var grid = List(height) { MutableList(width) { initialValue } }
     var position = Pair(curX, curY)
@@ -110,6 +110,13 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
 
     fun print() {
         grid.forEach { line ->
+            println(line.map { cell -> mapToOutput(cell) }.joinToString(""))
+        }
+        println("$position $direction\n")
+    }
+
+    fun printReversed() {
+        grid.reversed().forEach { line ->
             println(line.map { cell -> mapToOutput(cell) }.joinToString(""))
         }
         println("$position $direction\n")
