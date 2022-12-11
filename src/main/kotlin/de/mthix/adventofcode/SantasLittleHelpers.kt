@@ -5,7 +5,7 @@ import java.io.File
 
 fun longArrayFromCsvInputForDay(year: Int, day: Int) = textOfDay(year, day).split(',').map { it.toLong() }.toTypedArray()
 
-fun textOfDay(year: Int, day: Int) = fileOfDay(year, day).readText()
+fun textOfDay(year: Int, day: Int, useExample: Int = 0) = fileOfDay(year, day, useExample).readText()
 
 fun linesOfDay(year: Int, day: Int, useExample: Int = 0) = fileOfDay(year, day, useExample).readLines()
 
