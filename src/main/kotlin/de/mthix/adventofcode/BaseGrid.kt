@@ -46,15 +46,15 @@ class GridNode<T>(val x : Int, val y : Int, weight : Int, value : T, private val
     fun getNeighbors(includeDiagonally : Boolean) : List<GridNode<T>> {
         val neighbors = mutableListOf<GridNode<T>>()
 
-        val isTop = x <= 0
-        val isBottom = x >= grid.height-1
-        val isMostLeft = id.y <= 0
-        val isMostRight = id.y >= grid.width-1
+        val isTop = y <= 0
+        val isBottom = y >= grid.height-1
+        val isMostLeft = id.x <= 0
+        val isMostRight = id.x >= grid.width-1
 
-        if (!isTop) neighbors.add(grid.getNode(x-1, id.y)) // over
-        if (!isBottom) neighbors.add(grid.getNode(x+1, id.y)) // under
-        if (!isMostLeft) neighbors.add(grid.getNode(x, id.y-1)) // left
-        if (!isMostRight) neighbors.add(grid.getNode(x, id.y+1)) // right
+        if (!isTop) neighbors.add(grid.getNode(x, id.y-1)) // over
+        if (!isBottom) neighbors.add(grid.getNode(x, id.y+1)) // under
+        if (!isMostLeft) neighbors.add(grid.getNode(x-1, id.y)) // left
+        if (!isMostRight) neighbors.add(grid.getNode(x+1, id.y)) // right
 
         if (includeDiagonally) {
             if (!isTop && !isMostLeft) neighbors.add(grid.getNode(x-1, id.y-1)) // left over
@@ -81,10 +81,9 @@ data class PathElement<N>(val node: N, var predecessor: N? = null, var totalDist
 open class Traversable<I, T, N : BaseNode<I,T>> {
     val nodes = mutableMapOf<I, N>()
 
-
-    fun findAllPathsByDFS(startId : I, endId : I): MutableList<List<I>> {
+    fun findAllPathsByDFS(startId : I, endId : I, isReachableNeighbor : (BaseNode<I,T>, BaseNode<I,T>) -> Boolean = {c,n -> true} ): MutableList<List<I>> {
         val allPaths = mutableListOf<List<I>>()
-        findAllPathsByDFS(nodes[startId], nodes[endId], allPaths, mutableListOf(), nodes.keys.associateWith { 0 }.toMutableMap())
+        findAllPathsByDFS(nodes[startId], nodes[endId], allPaths, mutableListOf(), nodes.keys.associateWith { 0 }.toMutableMap(), isReachableNeighbor)
         return allPaths
     }
 
@@ -92,7 +91,8 @@ open class Traversable<I, T, N : BaseNode<I,T>> {
                                   end : N?,
                                   allPaths : MutableList<List<I>>,
                                   currentPath : MutableList<I>,
-                                  visited : MutableMap<I, Int?>) {
+                                  visited : MutableMap<I, Int?>,
+                                  isReachableNeighbor : (BaseNode<I,T>, BaseNode<I,T>) -> Boolean) {
 
         if(current == null || end == null || (current.hasVisitationLimit() && visited[current.id]!! >= current.visitationLimit)) {
             return
@@ -106,16 +106,16 @@ open class Traversable<I, T, N : BaseNode<I,T>> {
             allPaths.add(currentPath)
         }
 
-        (current.getNeighbors() as List<N>).forEach { findAllPathsByDFS(it, end, allPaths, currentPath.toMutableList(), visited) }
+        (current.getNeighbors().filter { isReachableNeighbor(current, it) } as List<N>).forEach { findAllPathsByDFS(it, end, allPaths, currentPath.toMutableList(), visited, isReachableNeighbor) }
 
         currentPath.removeAt(currentPath.size-1)
         if(current.hasVisitationLimit()) { visited[current.id] = visited[current.id]!!-1 }
     }
 
 
-    fun findAllDistancesByDijkstra(start: I, target: I? = null) : Map<I, PathElement<N>> {
+    fun findAllDistancesByDijkstra(start: I, target: I? = null, isReachableNeighbor : (BaseNode<I,T>, BaseNode<I,T>) -> Boolean = {c,n -> true}) : Map<I, PathElement<N>> {
         // init
-        val pathsToTarget = nodes.map { it.key to PathElement(it.value) }.toMap()
+        val pathsToTarget = nodes.map { it.key to PathElement(it.value) }.toMap() // distances to each node initially infinite
         pathsToTarget[start]!!.totalDistance = 0 // distance to start is known
         val unvisitedPathElements = pathsToTarget.toMutableMap()
 
@@ -129,6 +129,7 @@ open class Traversable<I, T, N : BaseNode<I,T>> {
             }
 
             currentPathElement.node.getNeighbors()
+                .filter { isReachableNeighbor(currentPathElement.node, it) }
                 .filter { neighbor -> unvisitedPathElements.keys.contains(neighbor.id) }
                 .forEach { neighbor ->
                     val alternativeDistance = pathsToTarget[currentPathElement.node.id]!!.totalDistance + neighbor.weight
@@ -162,7 +163,7 @@ class Graph<T>() : Traversable<String, T, GraphNode<T>>() {
 /**
  * @param elements outer list over height, inner list over width
  */
-open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) : Traversable<Coordinates, T, GridNode<T>>() {
+open class BaseGrid<T>(elements : List<List<Int>>, transformValue : (Int) -> T, transformWeight : (Int) -> Int = { it }) : Traversable<Coordinates, T, GridNode<T>>() {
 
     val width : Int = elements[0].size
     val height : Int = elements.size
@@ -174,7 +175,7 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) : Tra
         for (y in 0 until height) {
             for (x in 0 until width) {
                 val value = elements[y][x]
-                grid += GridNode(x, y, value, transform(value),this)
+                grid += GridNode(x, y, transformWeight(value), transformValue(value),this)
             }
         }
 
@@ -275,6 +276,10 @@ open class BaseGrid<T>(elements : List<List<Int>>, transform : (Int) -> T) : Tra
 
         fun fromUnseparatedIntLines(lines : List<String>) : List<List<Int>> {
             return lines.map { it.map { it.toString().toInt() } }
+        }
+
+        fun fromUnseparatedCharLines(lines : List<String>) : List<List<Int>> {
+            return lines.map { it.map { it.code } }
         }
 
         fun emptyGrid(width : Int, height : Int) : List<List<Int>> {
