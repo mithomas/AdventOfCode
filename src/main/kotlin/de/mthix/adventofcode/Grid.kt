@@ -3,29 +3,38 @@ package de.mthix.adventofcode
 import java.util.*
 
 /** Top-left = 0,0 */
-abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: Int = 0, curY: Int = 0, val name: String = "") {
+abstract class Grid<T>(
+    val width: Int,
+    val height: Int,
+    initialValue: T,
+    curX: Int = 0,
+    curY: Int = 0,
+    val name: String = ""
+) {
 
     var grid = List(height) { MutableList(width) { initialValue } }
-    var position = Pair(curX, curY)
+    var position = Coordinates(curX, curY)
     var direction = Direction.NORTH
     var visited = mutableSetOf(position)
 
     fun getCurrent() = get(position)
-    fun get(cell: Pair<Int, Int>) = get(cell.first, cell.second)
+    fun get(cell: Coordinates) = get(cell.x, cell.y)
     fun get(x: Int, y: Int) = grid[y][x]
 
     fun setCurrent(value: T) {
-        set(value, position.first, position.second)
+        set(value, position.x, position.y)
     }
 
     fun set(value: T, x: Int, y: Int) {
         grid[y][x] = value
     }
 
-    fun lookNorth() = get(position.first, position.second - 1)
-    fun lookSouth() = get(position.first, position.second + 1)
-    fun lookWest() = get(position.first - 1, position.second)
-    fun lookEast() = get(position.first + 1, position.second)
+    fun lookNorth() = get(position.x, position.y - 1)
+    fun lookSouth() = get(position.x, position.y + 1)
+    fun lookSouthWest() = get(position.x-1, position.y + 1)
+    fun lookSouthEast() = get(position.x+1, position.y + 1)
+    fun lookWest() = get(position.x - 1, position.y)
+    fun lookEast() = get(position.x + 1, position.y)
     fun lookLeft(): T {
         return when (direction) {
             Direction.NORTH -> lookWest()
@@ -66,10 +75,48 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
     fun moveSouth() = moveBy(0, 1)
     fun moveWest() = moveBy(-1, 0)
     fun moveEast() = moveBy(1, 0)
-    fun moveBy(offsetX: Int, offsetY: Int) = moveTo(position.first + offsetX, position.second + offsetY)
+    fun moveBy(offsetX: Int, offsetY: Int) = moveTo(position.x + offsetX, position.y + offsetY)
     fun moveTo(x: Int, y: Int) {
-        position = Pair(x, y)
+        position = Coordinates(x, y)
         visited.add(position)
+    }
+
+    fun moveTo(coordinates: Coordinates) {
+        position = coordinates
+        visited.add(position)
+    }
+
+    fun moveStraightAndSet(from: Coordinates, to: Coordinates, value: T) {
+        moveTo(from)
+        setCurrent(value)
+
+        if(from.x == to.x) {
+            if(to.y - from.y < 0) {
+                while(position != to) {
+                    moveNorth()
+                    setCurrent(value)
+                }
+            } else if(to.y - from.y > 0) {
+                while(position != to) {
+                    moveSouth()
+                    setCurrent(value)
+                }
+            }
+        } else if(from.y == to.y) {
+            if(to.x - from.x < 0) {
+                while(position != to) {
+                    moveWest()
+                    setCurrent(value)
+                }
+            } else if(to.x - from.x > 0) {
+                while(position != to) {
+                    moveEast()
+                    setCurrent(value)
+                }
+            }
+        } else {
+            throw IllegalArgumentException("No straight line from $from to $to!")
+        }
     }
 
     fun moveForward() {
@@ -104,7 +151,7 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
 
 
     fun cells() = grid.flatten()
-    fun neighbourValues(cell: Pair<Int, Int>): List<T> {
+    fun neighbourValues(cell: Coordinates): List<T> {
         return listOf(lookSouth(), lookWest(), lookEast(), lookNorth())
     }
 
@@ -125,7 +172,7 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
     abstract fun mapToOutput(value: T): Char
     abstract fun isBlocked(value: T): Boolean
 
-    fun getMinDistance(start: Pair<Int, Int>, target: Pair<Int, Int>): Int {
+    fun getMinDistance(start: Coordinates, target: Coordinates): Int {
         val source = PathElementOld(start, 0)
 
         // keep track of visited cells; marking blocked cells as visited. 
@@ -143,25 +190,25 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
 
             // moving up 
             if (p.y - 1 >= 0 && !visited[p.y - 1][p.x]) {
-                q.push(PathElementOld(Pair(p.y - 1, p.x), p.dist + 1))
+                q.push(PathElementOld(Coordinates(p.y - 1, p.x), p.dist + 1))
                 visited[p.y - 1][p.x] = true
             }
 
             // moving down 
             if (p.y + 1 < height && !visited[p.y + 1][p.x]) {
-                q.push(PathElementOld(Pair(p.y + 1, p.x), p.dist + 1))
+                q.push(PathElementOld(Coordinates(p.y + 1, p.x), p.dist + 1))
                 visited[p.y + 1][p.x] = true
             }
 
             // moving left 
             if (p.x - 1 >= 0 && !visited[p.y][p.x - 1]) {
-                q.push(PathElementOld(Pair(p.y, p.x - 1), p.dist + 1))
+                q.push(PathElementOld(Coordinates(p.y, p.x - 1), p.dist + 1))
                 visited[p.y][p.x - 1] = true
             }
 
             // moving right 
             if (p.x + 1 < width && !visited[p.y][p.x + 1]) {
-                q.push(PathElementOld(Pair(p.y, p.x + 1), p.dist + 1))
+                q.push(PathElementOld(Coordinates(p.y, p.x + 1), p.dist + 1))
                 visited[p.y][p.x + 1] = true
             }
         }
@@ -169,9 +216,9 @@ abstract class Grid<T>(val width: Int, val height: Int, initialValue: T, curX: I
     }
 }
 
-data class PathElementOld(val coordinates: Pair<Int, Int>, var dist: Int = 0) {
-    val x = coordinates.first
-    val y = coordinates.second
+data class PathElementOld(val coordinates: Coordinates, var dist: Int = 0) {
+    val x = coordinates.x
+    val y = coordinates.x
 }
 
 enum class Direction {

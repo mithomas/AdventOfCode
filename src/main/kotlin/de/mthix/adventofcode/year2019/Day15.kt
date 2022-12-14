@@ -1,5 +1,6 @@
 package de.mthix.adventofcode.year2019
 
+import de.mthix.adventofcode.Coordinates
 import de.mthix.adventofcode.Direction
 import de.mthix.adventofcode.Grid
 import de.mthix.adventofcode.longArrayFromCsvInputForDay
@@ -102,12 +103,12 @@ val MOVE_LEFT = 3L
 val MOVE_RIGHT = 4L
 
 class RepairDroid {
-    var startPosition = Pair(21, 21)
-    var oxygenPosition: Pair<Int, Int>? = null
+    var startPosition = Coordinates(21, 21)
+    var oxygenPosition: Coordinates? = null
 
     val cpu = IntComputer(longArrayFromCsvInputForDay(2019, 15))
 
-    val grid = RepairHullGrid(41, 41, AreaTile.UNKN, startPosition.first, startPosition.second)
+    val grid = RepairHullGrid(41, 41, AreaTile.UNKN, startPosition.x, startPosition.y)
 
     fun discover() {
         grid.setCurrent(AreaTile.STAR)

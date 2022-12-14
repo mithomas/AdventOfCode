@@ -51,28 +51,28 @@ fun movePart(grid: KnotGrid, dir: String) {
 fun moveTail(headGrid: KnotGrid, tailGrid: KnotGrid, dir: String) {
     val actDir = getTailDir(headGrid, tailGrid, dir)
 
-    if (abs(tailGrid.position.second - headGrid.position.second) > 1) {
+    if (abs(tailGrid.position.y - headGrid.position.y) > 1) {
         when (actDir) {
             "U" -> tailGrid.moveNorth()
             "D" -> tailGrid.moveSouth()
         }
 
-        if (tailGrid.position.first < headGrid.position.first) {
+        if (tailGrid.position.x < headGrid.position.x) {
             tailGrid.moveEast()
-        } else if (tailGrid.position.first > headGrid.position.first) {
+        } else if (tailGrid.position.x > headGrid.position.x) {
             tailGrid.moveWest()
         }
     }
 
-    if (abs(tailGrid.position.first - headGrid.position.first) > 1) {
+    if (abs(tailGrid.position.x - headGrid.position.x) > 1) {
         when (actDir) {
             "R" -> tailGrid.moveEast()
             "L" -> tailGrid.moveWest()
         }
 
-        if (tailGrid.position.second < headGrid.position.second) {
+        if (tailGrid.position.y < headGrid.position.y) {
             tailGrid.moveSouth()
-        } else if (tailGrid.position.second > headGrid.position.second) {
+        } else if (tailGrid.position.y > headGrid.position.y) {
             tailGrid.moveNorth()
         }
     }
@@ -81,13 +81,13 @@ fun moveTail(headGrid: KnotGrid, tailGrid: KnotGrid, dir: String) {
 }
 
 fun getTailDir(headGrid: KnotGrid, tailGrid: KnotGrid, dir: String): String {
-    return if (headGrid.position.first - tailGrid.position.first < -1) {
+    return if (headGrid.position.x - tailGrid.position.x < -1) {
         "L"
-    } else if (headGrid.position.first - tailGrid.position.first > 1) {
+    } else if (headGrid.position.x - tailGrid.position.x > 1) {
         "R"
-    } else if (headGrid.position.second - tailGrid.position.second < -1) {
+    } else if (headGrid.position.y - tailGrid.position.y < -1) {
         "U"
-    } else if (headGrid.position.second - tailGrid.position.second > 1) {
+    } else if (headGrid.position.y - tailGrid.position.y > 1) {
         "D"
     } else {
         dir
