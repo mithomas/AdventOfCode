@@ -10,6 +10,7 @@ fun main() {
     val lines = linesOfDay(2022, 11, example).onEach { it.trim() }.chunked(7)
     println(lines)
 
+
     val reliefMonkeys = lines.mapIndexed { i, str -> Monkey(i, example, true, str) }
     (1..20).forEach {
         reliefMonkeys.forEach { it.inspectAndThrow(reliefMonkeys) }
@@ -18,10 +19,11 @@ fun main() {
     println(reliefMonkeys.map { it.itemsInspected })
     println("Puzzle 1: " + reliefMonkeys.map { it.itemsInspected }.sortedDescending().subList(0, 2).product())
 
+
     val worryMonkeys = lines.mapIndexed { i, str -> Monkey(i, example, false, str) }
     (1..10000).forEach {
-        //println("$it: ${worryMonkeys.map { it.items }}")
         worryMonkeys.forEach { it.inspectAndThrow(worryMonkeys) }
+        //println("$it: ${worryMonkeys.map { it.items }}")
     }
     println(worryMonkeys.map { it.itemsInspected })
     println("Puzzle 2: " + worryMonkeys.map { it.itemsInspected }.sortedDescending().subList(0, 2).product())
@@ -37,6 +39,9 @@ class Monkey(private val index: Int, val example: Int, private val cutInThree: B
     private val trueMonkey: Int
     private val falseMonkey: Int
 
+    private var monkeys = emptyList<Monkey>()
+
+
     init {
         initString[1].split(":")[1].split(",").forEach { items.add(it.trim().toInt()) }
 
@@ -47,8 +52,10 @@ class Monkey(private val index: Int, val example: Int, private val cutInThree: B
     }
 
     fun inspectAndThrow(monkeys: List<Monkey>) {
+        this.monkeys = monkeys
+
         while (items.isNotEmpty()) {
-            val value = manageWorry(operation(items.removeFirst().toBigInteger()), monkeys.map { it.dividableBy }.product())
+            val value = manageWorry(operation(items.removeFirst()))
             itemsInspected++
 
             if (value % dividableBy == 0) {
@@ -59,34 +66,36 @@ class Monkey(private val index: Int, val example: Int, private val cutInThree: B
         }
     }
 
-    private fun manageWorry(value : BigInteger, dividableProduct : Long) : Int {
-        return (if(cutInThree) {
+    private fun manageWorry(value: BigInteger): Int {
+        return (if (cutInThree) {
             value / 3.toBigInteger()
         } else {
-            value % dividableProduct.toBigInteger()
+            value % monkeys.map { it.dividableBy }.product().toBigInteger()
         }).toInt()
     }
 
-    private fun operation(value: BigInteger): BigInteger {
+    private fun operation(value: Int): BigInteger {
+        val bigValue = value.toBigInteger()
+
         return when (example) {
             0 -> when (index) {
-                0 -> value * 13.toBigInteger()
-                1 -> value + 2.toBigInteger()
-                2 -> value + 1.toBigInteger()
-                3 -> value + 8.toBigInteger()
-                4 -> value * value
-                5 -> value + 4.toBigInteger()
-                6 -> value * 17.toBigInteger()
-                7 -> value + 5.toBigInteger()
+                0 -> bigValue * 13.toBigInteger()
+                1 -> bigValue + 2.toBigInteger()
+                2 -> bigValue + 1.toBigInteger()
+                3 -> bigValue + 8.toBigInteger()
+                4 -> bigValue * bigValue
+                5 -> bigValue + 4.toBigInteger()
+                6 -> bigValue * 17.toBigInteger()
+                7 -> bigValue + 5.toBigInteger()
                 else -> throw IllegalArgumentException("Wrong index value: $index")
             }
 
             1 -> {
                 when (index) {
-                    0 -> value * 19.toBigInteger()
-                    1 -> value + 6.toBigInteger()
-                    2 -> value * value
-                    3 -> value + 3.toBigInteger()
+                    0 -> bigValue * 19.toBigInteger()
+                    1 -> bigValue + 6.toBigInteger()
+                    2 -> bigValue * bigValue
+                    3 -> bigValue + 3.toBigInteger()
                     else -> throw IllegalArgumentException("Wrong index value: $index")
                 }
             }
