@@ -7,7 +7,7 @@ fun main() {
         .map { it.toCharArray().asList() }
 
     val elements = linesOfDay
-        .map { listOf(it.subList(0, it.size/2), it.subList(it.size/2, it.size)) }
+        .map { it.chunked(it.size/2) }
         .map { it[0].intersect(it[1]).elementAt(0) }
         .map { calcPriority(it) }
 
