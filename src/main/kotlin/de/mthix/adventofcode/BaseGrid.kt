@@ -1,5 +1,7 @@
 package de.mthix.adventofcode
 
+import kotlin.math.abs
+
 /**
  * @param visitationLimit 0 for no visitation limit
  */
@@ -44,6 +46,14 @@ data class Coordinates(val x: Int, val y: Int) {
         xyCommaSeparated.split(",")[1].toInt()
     )
 
+    constructor(xString: String, yString: String) : this(
+        xString.trim().toInt(),
+        yString.trim().toInt()
+    )
+
+    fun getManhattanDistanceTo(target: Coordinates): Int {
+        return abs(this.x - target.x) + abs(this.y - target.y)
+    }
     override fun toString() = "[$x,$y]"
 }
 
