@@ -1,5 +1,6 @@
 package de.mthix.adventofcode
 
+import de.mthix.adventofcode.Direction.*
 import java.util.*
 
 /** Top-left = 0,0 */
@@ -14,7 +15,7 @@ abstract class Grid<T>(
 
     var grid = List(height) { MutableList(width) { initialValue } }
     var position = Coordinates(curX, curY)
-    var direction = Direction.NORTH
+    var direction = NORTH
     var visited = mutableSetOf(position)
 
     fun getCurrent() = get(position)
@@ -31,44 +32,36 @@ abstract class Grid<T>(
 
     fun lookNorth() = get(position.x, position.y - 1)
     fun lookSouth() = get(position.x, position.y + 1)
-    fun lookSouthWest() = get(position.x-1, position.y + 1)
-    fun lookSouthEast() = get(position.x+1, position.y + 1)
+    fun lookSouthWest() = get(position.x - 1, position.y + 1)
+    fun lookSouthEast() = get(position.x + 1, position.y + 1)
     fun lookWest() = get(position.x - 1, position.y)
     fun lookEast() = get(position.x + 1, position.y)
-    fun lookLeft(): T {
-        return when (direction) {
-            Direction.NORTH -> lookWest()
-            Direction.SOUTH -> lookEast()
-            Direction.WEST -> lookSouth()
-            Direction.EAST -> lookNorth()
-        }
+    fun lookLeft() = when (direction) {
+        NORTH -> lookWest()
+        SOUTH -> lookEast()
+        WEST -> lookSouth()
+        EAST -> lookNorth()
     }
 
-    fun lookRight(): T {
-        return when (direction) {
-            Direction.NORTH -> lookEast()
-            Direction.SOUTH -> lookWest()
-            Direction.WEST -> lookNorth()
-            Direction.EAST -> lookSouth()
-        }
+    fun lookRight() = when (direction) {
+        NORTH -> lookEast()
+        SOUTH -> lookWest()
+        WEST -> lookNorth()
+        EAST -> lookSouth()
     }
 
-    fun lookAhead(): T {
-        return when (direction) {
-            Direction.NORTH -> lookNorth()
-            Direction.SOUTH -> lookSouth()
-            Direction.WEST -> lookWest()
-            Direction.EAST -> lookEast()
-        }
+    fun lookAhead() = when (direction) {
+        NORTH -> lookNorth()
+        SOUTH -> lookSouth()
+        WEST -> lookWest()
+        EAST -> lookEast()
     }
 
-    fun lookBehind(): T {
-        return when (direction) {
-            Direction.NORTH -> lookSouth()
-            Direction.SOUTH -> lookNorth()
-            Direction.WEST -> lookEast()
-            Direction.EAST -> lookWest()
-        }
+    fun lookBehind() = when (direction) {
+        NORTH -> lookSouth()
+        SOUTH -> lookNorth()
+        WEST -> lookEast()
+        EAST -> lookWest()
     }
 
     fun moveNorth() = moveBy(0, -1)
@@ -90,26 +83,26 @@ abstract class Grid<T>(
         moveTo(from)
         setCurrent(value)
 
-        if(from.x == to.x) {
-            if(to.y - from.y < 0) {
-                while(position != to) {
+        if (from.x == to.x) {
+            if (to.y - from.y < 0) {
+                while (position != to) {
                     moveNorth()
                     setCurrent(value)
                 }
-            } else if(to.y - from.y > 0) {
-                while(position != to) {
+            } else if (to.y - from.y > 0) {
+                while (position != to) {
                     moveSouth()
                     setCurrent(value)
                 }
             }
-        } else if(from.y == to.y) {
-            if(to.x - from.x < 0) {
-                while(position != to) {
+        } else if (from.y == to.y) {
+            if (to.x - from.x < 0) {
+                while (position != to) {
                     moveWest()
                     setCurrent(value)
                 }
-            } else if(to.x - from.x > 0) {
-                while(position != to) {
+            } else if (to.x - from.x > 0) {
+                while (position != to) {
                     moveEast()
                     setCurrent(value)
                 }
@@ -121,19 +114,19 @@ abstract class Grid<T>(
 
     fun moveForward() {
         when (direction) {
-            Direction.NORTH -> moveNorth()
-            Direction.SOUTH -> moveSouth()
-            Direction.WEST -> moveWest()
-            Direction.EAST -> moveEast()
+            NORTH -> moveNorth()
+            SOUTH -> moveSouth()
+            WEST -> moveWest()
+            EAST -> moveEast()
         }
     }
 
     fun moveBackwards() {
         when (direction) {
-            Direction.NORTH -> moveSouth()
-            Direction.SOUTH -> moveNorth()
-            Direction.WEST -> moveEast()
-            Direction.EAST -> moveWest()
+            NORTH -> moveSouth()
+            SOUTH -> moveNorth()
+            WEST -> moveEast()
+            EAST -> moveWest()
         }
     }
 
@@ -227,38 +220,32 @@ enum class Direction {
     SOUTH,
     EAST;
 
-    fun turn(direction: Long): Direction {
-        when (direction) {
-            0L -> return left()
-            1L -> return right()
-            else -> throw IllegalArgumentException("Wrong direction: $direction")
-        }
+    fun turn(direction: Long) = when (direction) {
+        0L -> left()
+        1L -> right()
+        else -> throw IllegalArgumentException("Wrong direction: $direction")
     }
 
-    fun left(): Direction {
-        when (this) {
-            NORTH -> return WEST
-            WEST -> return SOUTH
-            SOUTH -> return EAST
-            EAST -> return NORTH
-        }
+    fun left() = when (this) {
+        NORTH -> WEST
+        WEST -> SOUTH
+        SOUTH -> EAST
+        EAST -> NORTH
     }
 
-    fun right(): Direction {
-        when (this) {
-            NORTH -> return EAST
-            WEST -> return NORTH
-            SOUTH -> return WEST
-            EAST -> return SOUTH
-        }
+
+    fun right() = when (this) {
+        NORTH -> EAST
+        WEST -> NORTH
+        SOUTH -> WEST
+        EAST -> SOUTH
     }
 
-    fun reverse(): Direction {
-        when (this) {
-            NORTH -> return SOUTH
-            WEST -> return EAST
-            SOUTH -> return NORTH
-            EAST -> return WEST
-        }
+
+    fun reverse() = when (this) {
+        NORTH -> SOUTH
+        WEST -> EAST
+        SOUTH -> NORTH
+        EAST -> WEST
     }
 }
