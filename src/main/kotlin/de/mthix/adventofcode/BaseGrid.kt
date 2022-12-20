@@ -7,7 +7,7 @@ import kotlin.math.abs
  */
 abstract class BaseNode<I, T>(val id: I, var visitationLimit: Int = 0, var weight: Int, var value: T) {
 
-    abstract fun getNeighbors(): List<BaseNode<I, T>>
+    abstract fun getNeighbors(): Set<BaseNode<I, T>>
     abstract fun getNeighborValues(): List<T>
 
     fun hasVisitationLimit() = visitationLimit != 0
@@ -17,13 +17,13 @@ abstract class BaseNode<I, T>(val id: I, var visitationLimit: Int = 0, var weigh
 
 class GraphNode<T>(id: String, visitationLimit: Int, value: T) : BaseNode<String, T>(id, visitationLimit, 1, value) {
 
-    private val neighbors = mutableListOf<GraphNode<T>>()
+    private val neighbors = mutableSetOf<GraphNode<T>>()
 
     fun addNeighbor(node: GraphNode<T>) {
         neighbors.add(node)
     }
 
-    override fun getNeighbors(): List<GraphNode<T>> {
+    override fun getNeighbors(): Set<GraphNode<T>> {
         return neighbors
     }
 
@@ -60,9 +60,9 @@ data class Coordinates(val x: Int, val y: Int) {
 class GridNode<T>(val x: Int, val y: Int, weight: Int, value: T, private val grid: BaseGrid<T>) :
     BaseNode<Coordinates, T>(Coordinates(x, y), 1, weight, value) {
 
-    override fun getNeighbors(): List<GridNode<T>> = getNeighbors(false)
-    fun getNeighbors(includeDiagonally: Boolean): List<GridNode<T>> {
-        val neighbors = mutableListOf<GridNode<T>>()
+    override fun getNeighbors(): Set<GridNode<T>> = getNeighbors(false)
+    fun getNeighbors(includeDiagonally: Boolean): Set<GridNode<T>> {
+        val neighbors = mutableSetOf<GridNode<T>>()
 
         val isTop = y <= 0
         val isBottom = y >= grid.height - 1
@@ -96,8 +96,7 @@ class GridNode<T>(val x: Int, val y: Int, weight: Int, value: T, private val gri
 
 data class PathElement<N>(val node: N, var predecessor: N? = null, var totalDistance: Int = 100000)
 
-open class Traversable<I, T, N : BaseNode<I, T>> {
-    val nodes = mutableMapOf<I, N>()
+open class Traversable<I, T, N : BaseNode<I, T>>(val nodes: MutableMap<I, N> = mutableMapOf()) {
 
     fun findAllPathsByDFS(
         startId: I,
@@ -139,7 +138,7 @@ open class Traversable<I, T, N : BaseNode<I, T>> {
             allPaths.add(currentPath)
         }
 
-        (current.getNeighbors().filter { isReachableNeighbor(current, it) } as List<N>).forEach {
+        (current.getNeighbors().filter { isReachableNeighbor(current, it) } as Set<N>).forEach {
             findAllPathsByDFS(
                 it,
                 end,
@@ -171,7 +170,7 @@ open class Traversable<I, T, N : BaseNode<I, T>> {
         // actual algorithm
         while (unvisitedPathElements.keys.isNotEmpty()) {
             val currentPathElement = unvisitedPathElements.values.minBy { it.totalDistance }
-            unvisitedPathElements.remove(currentPathElement!!.node.id)
+            unvisitedPathElements.remove(currentPathElement.node.id)
 
             if (currentPathElement.node.id == target) {
                 return pathsToTarget
@@ -183,7 +182,6 @@ open class Traversable<I, T, N : BaseNode<I, T>> {
                 .forEach { neighbor ->
                     val alternativeDistance =
                         pathsToTarget[currentPathElement.node.id]!!.totalDistance + neighbor.weight
-                    //println(alternativeDistance)
                     if (alternativeDistance < pathsToTarget[neighbor.id]!!.totalDistance) {
                         pathsToTarget[neighbor.id]!!.totalDistance = alternativeDistance
                         pathsToTarget[neighbor.id]!!.predecessor = currentPathElement.node
@@ -193,9 +191,23 @@ open class Traversable<I, T, N : BaseNode<I, T>> {
 
         return pathsToTarget
     }
+
+    fun getPath(target: I, paths: Map<I, PathElement<N>>) : List<N> {
+        val path = mutableListOf<N>()
+
+        var curElement = paths[target]
+        while(curElement != null) {
+            path.add(curElement!!.node)
+            curElement = paths[curElement.predecessor?.id]
+        }
+
+        return path.reversed()
+    }
 }
 
-class Graph<T>() : Traversable<String, T, GraphNode<T>>() {
+
+
+class Graph<T>(nodes: MutableMap<String,GraphNode<T>> = mutableMapOf()) : Traversable<String, T, GraphNode<T>>(nodes) {
 
     fun registerEdge(id1: String, id2: String, initNode: (String) -> GraphNode<T>, undirected: Boolean = true) {
         val node1 = nodes.getOrPut(id1) { initNode(id1) }
