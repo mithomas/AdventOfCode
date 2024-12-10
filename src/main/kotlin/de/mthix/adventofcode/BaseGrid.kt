@@ -51,9 +51,20 @@ data class Coordinates(val x: Int, val y: Int) {
         yString.trim().toInt()
     )
 
-    fun getManhattanDistanceTo(target: Coordinates): Int {
-        return abs(this.x - target.x) + abs(this.y - target.y)
+    fun getManhattanDistanceTo(target: Coordinates) = abs(this.x - target.x) + abs(this.y - target.y)
+
+    fun getNorth() = Coordinates(x,y-1)
+    fun getEast() = Coordinates(x+1,y)
+    fun getSouth() = Coordinates(x,y+1)
+    fun getWest() = Coordinates(x-1,y)
+
+    fun getNext(d:Direction) = when(d) {
+        Direction.NORTH -> getNorth()
+        Direction.EAST -> getEast()
+        Direction.SOUTH -> getSouth()
+        Direction.WEST -> getWest()
     }
+
     override fun toString() = "[$x,$y]"
 }
 
