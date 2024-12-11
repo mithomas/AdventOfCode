@@ -14,7 +14,7 @@ fun intStreamOfDay(year: Int, day: Int) = intsOf(textOfDay(year,day))
 fun intsOf(string: String) = string.map { it.toString().toInt() }
 
 fun fileOfDay(year: Int, day: Int, useExample : Int = 0) : File {
-    val name = if(useExample == 0) "year$year/input.day$day.txt" else "year$year/example$useExample.day$day.txt"
+    val name = if(useExample == 0) "year$year/day$day.input.txt" else "year$year/day$day.example$useExample.txt"
     return File(object {}.javaClass.getResource(name).file)
 }
 
