@@ -58,6 +58,10 @@ data class Coordinates(val x: Int, val y: Int) {
     fun getSouth() = Coordinates(x,y+1)
     fun getWest() = Coordinates(x-1,y)
 
+    fun getNeighbours() = listOf(getNorth(),getSouth(),getWest(),getEast())
+
+    fun isInStringMap(map:List<String>) = x >= 0 && x < map[0].length && y >= 0 && y < map.size
+
     fun getNext(d:Direction) = when(d) {
         Direction.NORTH -> getNorth()
         Direction.EAST -> getEast()
